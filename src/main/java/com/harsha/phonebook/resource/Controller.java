@@ -18,44 +18,92 @@ public class Controller {
 
     @PostMapping("")
     public ResponseEntity<GenericResponse<ContactDTO>> addContact(@RequestBody CreateContactRequest request) {
-        return new ResponseEntity<>(new GenericResponse<>("Added contact", service.createContact(request)), HttpStatus.ACCEPTED);
+        try {
+            return new ResponseEntity<>(new GenericResponse<>("Added contact", service.createContact(request)), HttpStatus.ACCEPTED);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("[addContact] IllegalArgumentException " + ex.getMessage());
+            return new ResponseEntity<>(new GenericResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new GenericResponse<>("Internal Server Error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("")
     public ResponseEntity<GenericResponse<List<ContactDTO>>> showAll() {
-        return new ResponseEntity<>(new GenericResponse<>("List of contacts", service.getAllContacts()), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(new GenericResponse<>("List of contacts", service.getAllContacts()), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("[showAll] IllegalArgumentException " + ex.getMessage());
+            return new ResponseEntity<>(new GenericResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new GenericResponse<>("Internal Server Error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<GenericResponse<ContactDTO>> getContactDetails(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(new GenericResponse<>("Contact details", service.getContactDetails(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid id"))), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(new GenericResponse<>("Contact details", service.getContactDetails(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid id"))), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("[getContactDetails] IllegalArgumentException " + ex.getMessage());
+            return new ResponseEntity<>(new GenericResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new GenericResponse<>("Internal Server Error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<GenericResponse<ContactDTO>> updateContact(@PathVariable("id") Long id,
                                                                      @RequestBody UpdateContactRequest request) {
-        request.setId(id);
-        return new ResponseEntity<>(new GenericResponse<>("Contact details", service.updateContact(request)),
-                HttpStatus.OK);
+        try {
+            request.setId(id);
+            return new ResponseEntity<>(new GenericResponse<>("Contact details", service.updateContact(request)),
+                    HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("[updateContact] IllegalArgumentException " + ex.getMessage());
+            return new ResponseEntity<>(new GenericResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new GenericResponse<>("Internal Server Error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<GenericResponse<Void>> removeContact(@PathVariable("id") Long id) {
-        RemoveContactRequest request = new RemoveContactRequest();
-        request.setId(id);
-        service.deleteContact(request);
-        return new ResponseEntity<>(new GenericResponse<>("Contact details", null), HttpStatus.OK);
+        try {
+            RemoveContactRequest request = new RemoveContactRequest();
+            request.setId(id);
+            service.deleteContact(request);
+            return new ResponseEntity<>(new GenericResponse<>("Contact details", null), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("[removeContact] IllegalArgumentException " + ex.getMessage());
+            return new ResponseEntity<>(new GenericResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new GenericResponse<>("Internal Server Error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/search")
     public ResponseEntity<GenericResponse<List<ContactDTO>>> searchContacts(@RequestParam("firstName") Optional<String> firstName,
                                                                             @RequestParam("lastName")Optional<String> lastName,
                                                                             @RequestParam("contact") Optional<String> contact) {
-        SearchContactRequest request = new SearchContactRequest();
-        request.setContact(contact.orElse(null));
-        request.setFirstName(firstName.orElse(null));
-        request.setLastName(lastName.orElse(null));
-        return new ResponseEntity<>(new GenericResponse<>("List of contacts", service.searchContacts(request)), HttpStatus.OK);
+        try {
+            SearchContactRequest request = new SearchContactRequest();
+            request.setContact(contact.orElse(null));
+            request.setFirstName(firstName.orElse(null));
+            request.setLastName(lastName.orElse(null));
+            return new ResponseEntity<>(new GenericResponse<>("List of contacts", service.searchContacts(request)), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("[searchContacts] IllegalArgumentException " + ex.getMessage());
+            return new ResponseEntity<>(new GenericResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new GenericResponse<>("Internal Server Error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
